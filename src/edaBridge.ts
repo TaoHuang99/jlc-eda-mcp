@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { createServer, type Server } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 import type { BridgeMessage, BridgeRequest, BridgeResponse, ClientInfo } from "./types.js";
 
@@ -16,15 +17,16 @@ type BridgeOptions = {
 
 export class EdaBridge {
   private readonly wss: WebSocketServer;
+  private readonly httpServer: Server;
   private readonly pending = new Map<string, PendingRequest>();
   private client?: WebSocket;
   private clientInfo?: ClientInfo;
+  private listenError?: string;
+  private listening = false;
 
   constructor(private readonly options: BridgeOptions) {
-    this.wss = new WebSocketServer({
-      host: options.host,
-      port: options.port,
-    });
+    this.httpServer = createServer();
+    this.wss = new WebSocketServer({ server: this.httpServer });
 
     this.wss.on("connection", (socket, request) => {
       if (this.client && this.client.readyState === WebSocket.OPEN) {
@@ -51,6 +53,29 @@ export class EdaBridge {
         this.rejectAllPending(`EDA extension socket error: ${error.message}`);
       });
     });
+
+    this.wss.on("error", (error: NodeJS.ErrnoException) => {
+      this.listening = false;
+      this.listenError =
+        error.code === "EADDRINUSE"
+          ? `${this.url} is already in use. Stop the other jlc-eda-mcp process or set JLCEDA_MCP_PORT to a free port.`
+          : error.message;
+    });
+
+    this.httpServer.on("listening", () => {
+      this.listening = true;
+      this.listenError = undefined;
+    });
+
+    this.httpServer.on("error", (error: NodeJS.ErrnoException) => {
+      this.listening = false;
+      this.listenError =
+        error.code === "EADDRINUSE"
+          ? `${this.url} is already in use. Stop the other jlc-eda-mcp process or set JLCEDA_MCP_PORT to a free port.`
+          : error.message;
+    });
+
+    this.httpServer.listen(options.port, options.host);
   }
 
   get url(): string {
@@ -59,8 +84,9 @@ export class EdaBridge {
 
   status() {
     return {
-      listening: true,
+      listening: this.listening,
       url: this.url,
+      listenError: this.listenError,
       connected: this.isConnected(),
       client: this.clientInfo,
       pendingRequests: this.pending.size,
@@ -73,6 +99,10 @@ export class EdaBridge {
 
   async request(method: string, params?: unknown): Promise<unknown> {
     if (!this.client || this.client.readyState !== WebSocket.OPEN) {
+      if (this.listenError) {
+        throw new Error(this.listenError);
+      }
+
       throw new Error(
         `JLCEDA extension is not connected. Install/open the extension and connect it to ${this.url}.`,
       );
@@ -102,7 +132,14 @@ export class EdaBridge {
   close(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.rejectAllPending("Bridge is shutting down");
-      this.wss.close((error) => (error ? reject(error) : resolve()));
+      this.wss.close((wssError) => {
+        if (wssError) {
+          reject(wssError);
+          return;
+        }
+
+        this.httpServer.close((serverError) => (serverError ? reject(serverError) : resolve()));
+      });
     });
   }
 
