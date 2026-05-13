@@ -1,0 +1,79 @@
+{
+  "name": "jlc-eda-mcp",
+  "uuid": "",
+  "displayName": "JLCEDA MCP Bridge",
+  "description": "Connects JLCEDA/EasyEDA Pro to local MCP clients for AI-assisted PCB automation.",
+  "version": "0.1.0",
+  "publisher": "JLCEDA MCP Contributors",
+  "engines": {
+    "eda": "^2.3.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "github",
+    "url": ""
+  },
+  "categories": ["PCB", "Project", "Other"],
+  "keywords": ["MCP", "AI", "automation", "PCB"],
+  "homepage": "https://github.com/your-name/jlc-eda-mcp",
+  "bugs": "https://github.com/your-name/jlc-eda-mcp/issues",
+  "activationEvents": {},
+  "entry": "./dist/index",
+  "dependentExtensions": {},
+  "headerMenus": {
+    "home": [
+      {
+        "id": "jlc-eda-mcp",
+        "title": "JLCEDA MCP",
+        "menuItems": [
+          {
+            "id": "connect",
+            "title": "Connect Bridge",
+            "registerFn": "connectBridge"
+          },
+          {
+            "id": "status",
+            "title": "Show Status",
+            "registerFn": "showStatus"
+          }
+        ]
+      }
+    ],
+    "sch": [
+      {
+        "id": "jlc-eda-mcp",
+        "title": "JLCEDA MCP",
+        "menuItems": [
+          {
+            "id": "connect",
+            "title": "Connect Bridge",
+            "registerFn": "connectBridge"
+          },
+          {
+            "id": "status",
+            "title": "Show Status",
+            "registerFn": "showStatus"
+          }
+        ]
+      }
+    ],
+    "pcb": [
+      {
+        "id": "jlc-eda-mcp",
+        "title": "JLCEDA MCP",
+        "menuItems": [
+          {
+            "id": "connect",
+            "title": "Connect Bridge",
+            "registerFn": "connectBridge"
+          },
+          {
+            "id": "status",
+            "title": "Show Status",
+            "registerFn": "showStatus"
+          }
+        ]
+      }
+    ]
+  }
+}

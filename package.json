@@ -1,0 +1,46 @@
+{
+  "name": "jlc-eda-mcp",
+  "version": "0.1.0",
+  "description": "MCP server and EasyEDA/JLCEDA extension bridge for AI-assisted PCB automation.",
+  "type": "module",
+  "bin": {
+    "jlc-eda-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "extension",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "mock-extension": "node scripts/mock-extension.mjs",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "jlc",
+    "jlcpcb",
+    "easyeda",
+    "eda",
+    "pcb"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "ws": "^8.20.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
