@@ -8,8 +8,9 @@ The project has two pieces:
 - A local MCP server written in TypeScript.
 - An EasyEDA Pro / JLCEDA Pro extension bridge that connects to the server over WebSocket.
 
-This is an early but usable bridge. It exposes safe status/context tools plus a trusted
-local JavaScript execution tool for automation experiments.
+This is an early but usable bridge. It exposes status/context tools, trusted local
+JavaScript execution, and higher-level PCB creation tools that Codex can call directly
+from natural-language requests.
 
 ## Architecture
 
@@ -119,6 +120,43 @@ The MCP server currently registers these tools:
 - `jlceda_get_context`: return basic editor and environment context.
 - `jlceda_eval`: run trusted JavaScript in the extension context with access to `eda`.
 - `jlceda_call`: call a named bridge operation implemented by the extension.
+- `jlceda_apply_pcb_design`: apply a structured PCB/schematic design plan.
+- `jlceda_create_header_breakout`: create a usable through-hole header breakout PCB.
+
+## Direct Codex Usage
+
+After the MCP server is enabled in Codex and the JLCEDA extension is connected, you can
+ask for practical design work in natural language:
+
+```text
+Use jlc-eda to create a 2x8 2.54mm header breakout PCB, 30mm by 20mm, with 0.8mm drills and short fanout traces.
+```
+
+```text
+Use jlc-eda to draw a simple rectangular 50mm by 30mm PCB outline with four mounting holes and label the nets.
+```
+
+For custom boards, Codex should translate the request into `jlceda_apply_pcb_design`
+commands. Coordinates are in millimeters.
+
+Supported first-class command kinds:
+
+- `pcbLine`: create a PCB line or track.
+- `pcbPad`: create a PCB pad.
+- `pcbVia`: create a via.
+- `schWire`: create a schematic wire.
+- `schNetFlag`: create a schematic net flag.
+- `schComponent`: place a schematic component by library UUID.
+- `pcbComponent`: place a PCB footprint by library UUID.
+
+Common PCB layer IDs:
+
+- `1`: top copper.
+- `2`: bottom copper.
+- `3`: top silkscreen.
+- `4`: bottom silkscreen.
+- `11`: board outline.
+- `12`: multi-layer through-hole pad.
 
 Example `jlceda_eval` input:
 

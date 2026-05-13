@@ -1,0 +1,66 @@
+{
+  "boardName": "Simple Test Board",
+  "units": "mm",
+  "commands": [
+    {
+      "kind": "pcbLine",
+      "layer": 11,
+      "startX": 0,
+      "startY": 0,
+      "endX": 50,
+      "endY": 0,
+      "width": 0.15
+    },
+    {
+      "kind": "pcbLine",
+      "layer": 11,
+      "startX": 50,
+      "startY": 0,
+      "endX": 50,
+      "endY": 30,
+      "width": 0.15
+    },
+    {
+      "kind": "pcbLine",
+      "layer": 11,
+      "startX": 50,
+      "startY": 30,
+      "endX": 0,
+      "endY": 30,
+      "width": 0.15
+    },
+    {
+      "kind": "pcbLine",
+      "layer": 11,
+      "startX": 0,
+      "startY": 30,
+      "endX": 0,
+      "endY": 0,
+      "width": 0.15
+    },
+    {
+      "kind": "pcbPad",
+      "padNumber": "1",
+      "x": 10,
+      "y": 15,
+      "layer": 12,
+      "net": "VIN",
+      "shape": "RECT",
+      "width": 1.6,
+      "height": 1.6,
+      "holeDiameter": 0.8
+    },
+    {
+      "kind": "pcbPad",
+      "padNumber": "2",
+      "x": 12.54,
+      "y": 15,
+      "layer": 12,
+      "net": "GND",
+      "shape": "ELLIPSE",
+      "width": 1.6,
+      "height": 1.6,
+      "holeDiameter": 0.8
+    }
+  ]
+}

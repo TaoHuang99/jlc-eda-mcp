@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import * as z from "zod/v4";
 import { EdaBridge } from "./edaBridge.js";
+import { headerBreakoutSchema, pcbDesignSchema } from "./designSchemas.js";
 
 const bridge = new EdaBridge({
   host: process.env.JLCEDA_MCP_HOST ?? "127.0.0.1",
@@ -79,6 +80,30 @@ server.registerTool(
     },
   },
   async ({ operation, args }) => textResult(await bridge.request(operation, args)),
+);
+
+server.registerTool(
+  "jlceda_apply_pcb_design",
+  {
+    description:
+      "Apply a structured JLCEDA/EasyEDA Pro PCB/schematic design plan. Use this when the user asks Codex to create or modify a board from natural language.",
+    inputSchema: {
+      design: pcbDesignSchema.describe(
+        "Design commands in millimeters. Codex should translate the user's requested circuit/PCB into these commands.",
+      ),
+    },
+  },
+  async ({ design }) => textResult(await bridge.request("applyPcbDesign", design)),
+);
+
+server.registerTool(
+  "jlceda_create_header_breakout",
+  {
+    description:
+      "Create a directly usable through-hole header breakout PCB with board outline, pads, nets, and short fanout traces.",
+    inputSchema: headerBreakoutSchema.shape,
+  },
+  async (input) => textResult(await bridge.request("createHeaderBreakout", input)),
 );
 
 async function main() {
